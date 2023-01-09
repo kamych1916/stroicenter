@@ -1,5 +1,5 @@
 <template>
-  <div class="header section">
+  <header class="header section">
     <div class="header-wrapper">
       <nuxt-link to="/" class="header-logo">Стройцентр</nuxt-link>
       <div class="header-menu">
@@ -7,7 +7,7 @@
         <i class="bx bx-phone"></i>
       </div>
     </div>
-  </div>
+  </header>
 </template>
 
 <script>
@@ -18,7 +18,7 @@ export default {};
 .header {
   position: sticky;
   top: 0;
-  background: #fff;
+  background: #f8f8f8;
   z-index: 101;
   @include less-than(tablet) {
     display: none;

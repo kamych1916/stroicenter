@@ -17,25 +17,43 @@
     </div>
     <div class="home-menu">
       <div class="home-menu__wrapper">
-        <span :class="active_group.includes(1) ? 'home-menu__active' : null" @click="change_list(1)">Клеи для плитки</span>
-        <span :class="active_group.includes(2) ? 'home-menu__active' : null" @click="change_list(2)">Клеи для систем утепления фасадов</span>
-        <span :class="active_group.includes(3) ? 'home-menu__active' : null" @click="change_list(3)">Клеи для ячеистых блоков</span>
-        <span :class="active_group.includes(4) ? 'home-menu__active' : null" @click="change_list(4)">Клеи для обоев и напольных покрытий</span>
+        <span
+          :class="active_group.includes(1) ? 'home-menu__active' : null"
+          @click="change_list(1)"
+          >Клеи для плитки</span
+        >
+        <span
+          :class="active_group.includes(2) ? 'home-menu__active' : null"
+          @click="change_list(2)"
+          >Клеи для систем утепления фасадов</span
+        >
+        <span
+          :class="active_group.includes(3) ? 'home-menu__active' : null"
+          @click="change_list(3)"
+          >Клеи для ячеистых блоков</span
+        >
+        <span
+          :class="active_group.includes(4) ? 'home-menu__active' : null"
+          @click="change_list(4)"
+          >Клеи для обоев и напольных покрытий</span
+        >
       </div>
     </div>
 
     <div class="home-list">
-      <div class="home-product" v-for="glue in glues" :key="glue.id">
+      <div
+        class="home-product"
+        v-for="glue in glues"
+        :key="glue.id"
+        @click="$router.push('/product/' + glue.link)"
+      >
         <span>{{ glue.name }}</span>
-        <p>{{ glue.description }}</p>
+        <p v-html="glue.description"></p>
 
         <div class="home-product__hover">
-          <ul class="block3_promo_features">
-            <li
-              v-for="characteristic in glue.characteristics"
-              :key="characteristic"
-            >
-              {{ characteristic }}
+          <ul>
+            <li v-for="item in glue.items" :key="item">
+              {{ item }}
             </li>
 
             <div class="home-product__link">Подробнее</div>
@@ -53,91 +71,19 @@
 </template>
 
 <script>
-const GLUES = [
-  {
-    id: 1,
-    name: "НОВИНКА! MAXIFLEX",
-    group: [1, 3],
-    description:
-      "Клей эластичный с армирующими волокнами для тяжелых плит любого формата",
-    img: "/home/product-1.png",
-    packing: "Фасовка: Мешок 5, 20 и 25 кг",
-    characteristics: [
-      "С армирующими волокнами",
-      "Для внутренних и наружных работ",
-      "Идеален для новостроек: выдерживает деформации и нагрузки",
-      "Морозостойкость 150 циклов",
-    ],
-  },
-  {
-    id: 2,
-    name: "MAXIFLEX",
-    group: [2],
-    description:
-      "Клей эластичный с армирующими волокнами для тяжелых плит любого формата",
-    img: "/home/product-2.png",
-    packing: "Фасовка: Мешок 5, 20 и 25 кг",
-    characteristics: [
-      "С армирующими волокнами",
-      "Для внутренних и наружных работ",
-      "Идеален для новостроек: выдерживает деформации и нагрузки",
-      "Морозостойкость 150 циклов",
-    ],
-  },
-  {
-    id: 3,
-    name: "KLEBEN BLOCK",
-    group: [1],
-    description: "Клей для укладки ячеистых блоков",
-    img: "/home/product-3.png",
-    packing: "Фасовка: Мешок 5, 20 и 25 кг",
-    characteristics: [
-      "Высокая прочность кладки",
-      "Пластичность",
-      "Для внутренних и наружных работ",
-      "Возможность кладки с толщиной шва 2-3 мм",
-    ],
-  },
-  {
-    id: 4,
-    group: [4],
-    name: "DEKO FIXER",
-    description:
-      "Клей эластичный с армирующими волокнами для тяжелых плит любого формата",
-    img: "/home/product-4.png",
-    packing: "Фасовка: Ведро: 10, 3 кг",
-    characteristics: [
-      "Для всех типов нетканых и виниловых обоев",
-      "Без капель, пятен и брызг",
-      "Высокая клеящая способность",
-    ],
-  },
-  {
-    id: 5,
-    name: "BODEN FIXER",
-    group: [2, 4],
-    link: "/",
-    description: "Клей для напольных покрытий профессиональный",
-    img: "/home/product-5.png",
-    packing: "Фасовка: Ведро: 10, 3 кг",
-    characteristics: [
-      "Влагостойкий",
-      "Экологически безопасен",
-      "Прочное сцепление",
-    ],
-  },
-];
 export default {
   data() {
     return {
-      glues: GLUES,
-      glues_store: GLUES,
+      glues: this.$store.state.products.glues,
+      glues_store: this.$store.state.products.glues,
       active_group: [],
     };
   },
 
   fetchOnServer: false,
-  fetch() {},
+  fetch() {
+    window.scrollTo(0, 0);
+  },
 
   methods: {
     change_list(group_number) {
@@ -197,6 +143,7 @@ export default {
     flex-direction: column;
     text-align: center;
     h1 {
+      color: #044e6e;
       @include less-than(tablet) {
         font-size: 28px;
       }
@@ -233,9 +180,11 @@ export default {
     display: flex;
     justify-content: center;
     position: sticky;
-    top: 50px;
     z-index: 3;
-    background-color: #fff;
+    background-color: #f8f8f8;
+    @include less-than(laptop) {
+      position: inherit;
+    }
   }
   &-menu__wrapper {
     width: 100%;
@@ -244,19 +193,26 @@ export default {
     text-align: center;
     grid-gap: 20px;
     @include less-than(laptop) {
+      grid-gap: 20px;
       grid-template-columns: 1fr;
     }
     span {
-      transition: all ease 0.3s;
       flex: 2;
       cursor: pointer;
       color: #044e6e;
       padding: 5px 20px;
       border: 2px solid #044e6e;
-      // margin: 10px;
+      transition: all ease 0.3s;
+      &:hover {
+        transform: scale(1.02);
+      }
+      @include less-than(laptop) {
+        padding: 5px 20px;
+        font-size: 16px;
+      }
     }
   }
-  &-menu__active{
+  &-menu__active {
     background-color: #044e6e;
     color: #fff !important;
   }
@@ -270,11 +226,12 @@ export default {
     transition: all ease 0.3s;
 
     @include less-than(laptop) {
+      margin-top: 20px;
       grid-template-columns: 1fr;
     }
   }
   &-product {
-    background-color: #f5f7fa;
+    background-color: #fff;
     position: relative;
     transition: all ease 0.2s;
     cursor: pointer;
@@ -337,6 +294,11 @@ export default {
         text-align: center;
         text-transform: uppercase;
         letter-spacing: 1px;
+        transition: all ease 0.3s;
+        &:hover {
+          background-color: #044e6e;
+          transform: scale(1.02);
+        }
       }
     }
 

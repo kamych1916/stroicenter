@@ -49,15 +49,14 @@ export default {};
       width: 100vw;
       height: 90px;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 70%);
+      opacity: 0.3;
       position: absolute;
       bottom: -20px;
       z-index: -1;
     }
-    a.nuxt-link-active {
-      color: #5b7fff;
-    }
+
     a.nuxt-link-exact-active {
-      color: #5b7fff;
+      color: #044e6e;
     }
   }
 

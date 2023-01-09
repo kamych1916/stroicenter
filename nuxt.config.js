@@ -2,7 +2,7 @@ export default {
   server: {
     host: "0",
   },
-  // ssr: false,
+  ssr: true,
   components: true,
   // target: "static",
 
@@ -73,4 +73,9 @@ export default {
   },
 
   pageTransition: "page-transition",
+  router: {
+    scrollBehavior() {
+      return { top: 0 };
+    },
+  },
 };
