@@ -119,7 +119,7 @@ export default {
       this.upload_image = e.target.files[0]
     },
     async edit(){
-      const url = "http://localhost:3000/api/upload";
+      const url = "http://stroicenter.mirllex.com/api/upload";
       const formData = new FormData();
       formData.append("file", this.upload_image);
       const config = {
