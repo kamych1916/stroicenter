@@ -7,11 +7,17 @@
       <div class="home-welcome__description">
         <h1>Клей для плитки</h1>
         <div class="home-welcome__line"></div>
-        <span>Уверенность в результате</span>
+        <span>Надежный Результат</span>
         <p>
           Плиточный клей используется для проведения работ по&nbsp;монтажу
           керамической плитки, керамогранита, <br />
           камня и&nbsp;иных материалов.
+          <br />
+          <br />
+          Правильный выбор клея для укладки играет большую роль, ведь это
+          на&nbsp;прямую влияет на&nbsp;качество
+          <br />
+          облицовки и&nbsp;ее долговечность
         </p>
       </div>
     </div>
@@ -25,34 +31,44 @@
         <span
           :class="active_group.includes(2) ? 'home-menu__active' : null"
           @click="change_list(2)"
-          >Клеи для систем утепления фасадов</span
+          >Штукатурки</span
         >
         <span
           :class="active_group.includes(3) ? 'home-menu__active' : null"
           @click="change_list(3)"
-          >Клеи для ячеистых блоков</span
+          >Шпаклевки</span
         >
         <span
           :class="active_group.includes(4) ? 'home-menu__active' : null"
           @click="change_list(4)"
-          >Клеи для обоев и напольных покрытий</span
+          >Полы</span
+        >
+        <span
+          :class="active_group.includes(5) ? 'home-menu__active' : null"
+          @click="change_list(5)"
+          >Декор / Затирки</span
+        >
+        <span
+          :class="active_group.includes(6) ? 'home-menu__active' : null"
+          @click="change_list(6)"
+          >Лако-красочные материалы</span
         >
       </div>
     </div>
 
-    <div class="home-list">
+    <div class="home-list" ref="list">
       <div
         class="home-product"
-        v-for="glue in glues"
-        :key="glue.id"
-        @click="$router.push('/product/' + glue.link)"
+        v-for="product in products"
+        :key="product.id"
+        @click="$router.push('/product/' + product.link)"
       >
-        <span>{{ glue.name }}</span>
-        <p v-html="glue.description"></p>
+        <span>{{ product.name }}</span>
+        <p v-html="product.description"></p>
 
         <div class="home-product__hover">
           <ul>
-            <li v-for="item in glue.items" :key="item">
+            <li v-for="item in product.items" :key="item">
               {{ item }}
             </li>
 
@@ -60,10 +76,10 @@
           </ul>
         </div>
         <div class="home-product__img">
-          <img :src="glue.img" :alt="glue.name" />
+          <img :src="product.img" :alt="product.name" />
         </div>
         <div class="home-product__footer">
-          {{ glue.packing }}
+          {{ product.packing }}
         </div>
       </div>
     </div>
@@ -71,11 +87,14 @@
 </template>
 
 <script>
+import db from '~/api/database.txt';
+const DB = JSON.parse(db).products;
+
 export default {
   data() {
     return {
-      glues: this.$store.state.products.glues,
-      glues_store: this.$store.state.products.glues,
+      products: DB,
+      products_store: DB,
       active_group: [],
     };
   },
@@ -87,26 +106,32 @@ export default {
 
   methods: {
     change_list(group_number) {
+      window.scrollTo({
+        top: this.$refs.list.offsetTop - 40,
+        behavior: "smooth", 
+      });
+
       if (this.active_group.includes(group_number)) {
         this.active_group.splice(this.active_group.indexOf(group_number), 1);
       } else {
         this.active_group.push(group_number);
       }
+      
       if (this.active_group.length > 0) {
         let new_list = [];
         this.active_group.forEach((ag) => {
-          this.glues = this.glues_store.filter((glue) => {
-            return glue.group.includes(ag);
+          this.products = this.products_store.filter((product) => {
+            return product.group.includes(ag);
           });
-          new_list.push(...this.glues);
+          new_list.push(...this.products);
         });
 
-        this.glues = new_list;
-        this.glues = this.glues.filter((item, index) => {
-          return this.glues.indexOf(item) === index;
+        this.products = new_list;
+        this.products = this.products.filter((item, index) => {
+          return this.products.indexOf(item) === index;
         });
       } else {
-        this.glues = this.glues_store;
+        this.products = this.products_store;
       }
     },
   },

@@ -32,7 +32,7 @@ class BodyScroll {
     document.body.style.position = "fixed";
     document.body.style.marginTop = `${-this.scrollTop}px`;
     document.body.style.width = "100%";
-    document.body.style.overflowY = scrollbarWidth && !this.isMobile ? "scroll" : "";
+    document.body.style.overflow = scrollbarWidth && !this.isMobile ? "hidden" : "";
   }
 
   enable() {

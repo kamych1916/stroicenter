@@ -1,10 +1,10 @@
 export default {
-  server: {
-    host: "0",
-  },
+  // server: {
+  //   host: "0",
+  // },
   ssr: true,
+
   components: true,
-  // target: "static",
 
   head: {
     title: "Emyr",
@@ -60,6 +60,7 @@ export default {
     {
       src: "~/plugins/plugins.js",
     },
+    "~/plugins/api-context.js"
   ],
 
   modules: ["@nuxtjs/axios"],
@@ -70,6 +71,14 @@ export default {
     scss: {
       implementation: require("sass"),
     },
+    extend (config, ctx) {
+      config.module.rules.push({
+        enforce: 'pre',
+        test: /\.txt$/,
+        loader: 'raw-loader',
+        exclude: /(node_modules)/
+      });
+    }
   },
 
   pageTransition: "page-transition",
@@ -78,4 +87,19 @@ export default {
       return { top: 0 };
     },
   },
+
+  serverMiddleware: [
+    { path: "/api", handler: "~/serverMiddleware/api-image.js" },
+    { path: "/api", handler: require("body-parser").json() },
+    {
+      path: "/api",
+      handler: (req, res, next) => {
+        const url = require("url");
+        req.query = url.parse(req.url, true).query;
+        req.params = { ...req.query, ...req.body };
+        next();
+      }
+    },
+    { path: "/api", handler: "~/serverMiddleware/api-server.js" }
+  ],
 };

@@ -2,7 +2,7 @@
   <footer class="footer-background">
     <div class="section footer-wrapper">
       <div class="footer-logo">
-        <span> Стройцентр </span>
+        <span> Строй Центр </span>
         <p>Производство и продажа сухих строительных смесей</p>
       </div>
       <div class="footer-info">

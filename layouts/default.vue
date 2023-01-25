@@ -3,6 +3,6 @@
     <Header />
     <Nuxt />
     <Footer />
-    <M-mb-navbar />
+    <Mb-navbar />
   </div>
 </template>

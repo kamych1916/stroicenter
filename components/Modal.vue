@@ -60,7 +60,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 .modal {
   position: fixed;
   top: 0;
@@ -73,6 +73,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: scale(1.1);
+  @include less-than(laptop_l) {
+    transform: scale(1);
+  }
 
   &-outer {
     position: fixed;
@@ -107,17 +111,19 @@ export default {
     justify-content: center;
     align-items: center;
     z-index: 200;
-    font-size: 18px;
   }
 
   &-content {
     overflow: auto;
-    width: 100%;
+    width: 450px;
     height: 100%;
     position: relative;
-    max-width: 400px;
-    max-height: 600px;
+    max-width: 450px;
+    max-height: 650px;
     border-radius: 20px;
+    @include less-than(laptop_l) {
+      max-width: 400px;
+    }
     @include less-than(tablet) {
       max-width: 350px;
     }

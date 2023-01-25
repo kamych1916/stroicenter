@@ -1,7 +1,7 @@
 <template>
   <header class="header section">
     <div class="header-wrapper">
-      <nuxt-link to="/" class="header-logo">Стройцентр</nuxt-link>
+      <nuxt-link to="/" class="header-logo">Строй Центр</nuxt-link>
       <div class="header-menu">
         <i class="bx bx-globe"></i>
         <i class="bx bx-phone"></i>

@@ -4,7 +4,7 @@
       <div class="section">
         <div class="product-welcome">
           <div class="product-img">
-            <img :src="product.product_img" />
+            <img :src="product.img" />
           </div>
 
           <div class="product-about">
@@ -19,8 +19,15 @@
         </div>
       </div>
     </div>
-    <div class="product-packing">
-      {{ product.packing }}
+    <div class="product-menu">
+      <div class="section product-menu__wrapper">
+        <div class="product-menu__item">Применение</div>
+        <div class="product-menu__item product-menu__item--active">
+          Характеристики
+        </div>
+        <div class="product-menu__item">Инструкция</div>
+      </div>
+      <!-- {{ product.packing }} -->
     </div>
     <div class="section">
       <div class="product-characteristics">
@@ -49,7 +56,15 @@
         <div class="product-files">
           <div class="product-files__sticky">
             <div class="product-file">
-              <i class="bx bx-download"></i> скачать карточку товара
+              <div>{{ product.name }}</div>
+              <p v-html="product.description"></p>
+              <ul>
+                <li
+                  v-for="item in product.items"
+                  :key="item"
+                  v-html="item"
+                ></li>
+              </ul>
             </div>
           </div>
         </div>
@@ -60,6 +75,9 @@
 </template>
 
 <script>
+import db from '~/api/database.txt';
+const DB = JSON.parse(db).products;
+
 export default {
   data() {
     return {
@@ -69,9 +87,9 @@ export default {
 
   fetchOnServer: false,
   fetch() {
-    this.$store.state.products.glues.forEach((glue) => {
-      if (glue.link == this.$route.params.id) {
-        this.product = glue;
+    DB.forEach((product) => {
+      if (product.link == this.$route.params.id) {
+        this.product = product;
       }
     });
     window.scrollTo(0, 0);
@@ -84,7 +102,8 @@ export default {
   &-background {
     width: 100%;
     height: 100%;
-    background-color: #1f6e8f;
+    background: #1f6e8f url(~/static/shipment_background.png) left 0% top
+      no-repeat;
   }
   &-welcome {
     position: relative;
@@ -102,8 +121,9 @@ export default {
     flex: auto;
     display: flex;
     justify-content: center;
-    img {
-      width: 80%;
+    margin-right: 100px;
+    @include less-than(laptop) {
+      margin-right: 20px;
     }
   }
   &-about {
@@ -165,13 +185,32 @@ export default {
     }
   }
 
-  &-packing {
+  &-menu {
     width: 100%;
     height: 100%;
-    padding: 20px;
+    // padding: 20px 0;
     background-color: #02405b;
     color: #fff;
-    text-align: center;
+  }
+  &-menu__wrapper {
+    display: flex;
+    justify-content: space-between;
+    @include less-than(laptop) {
+      flex-direction: column;
+      padding: 0;
+    }
+  }
+  &-menu__item {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px 0;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+  }
+  &-menu__item--active {
+    border-bottom: 3px solid #179dff;
+    color: #fff;
   }
 
   &-characteristics {
@@ -181,6 +220,7 @@ export default {
       flex-direction: column;
     }
   }
+
   &-info {
     flex: 100%;
     padding-right: 40px;
@@ -200,8 +240,9 @@ export default {
     box-shadow: 1px 1.732px 10px 0px rgb(0 0 0 / 5%);
     background: white;
   }
+
   &-files {
-    flex: 25%;
+    flex: 50%;
     @include less-than(laptop) {
       flex: 100%;
       margin-top: 40px;
@@ -214,23 +255,19 @@ export default {
   }
   &-file {
     padding: 16px 0px;
-    border-bottom: 1px solid #ccc;
     color: #02405b;
     font-weight: 800;
-    display: flex;
-    align-items: center;
-    @include less-than(laptop) {
-      text-align: center;
-      justify-content: center;
+    * {
+      margin-bottom: 10px;
     }
-    i {
-      color: #64b3f9;
-      font-size: 20px;
-      line-height: 16px;
-      padding-right: 5px;
-      @include less-than(laptop) {
-        padding-right: 10px;
-      }
+    ul {
+      margin-top: 20px;
+    }
+    li {
+      margin-bottom: 0px;
+      padding: 10px 0;
+      border-bottom: 1px solid #ccc;
+      list-style: none;
     }
   }
 }
