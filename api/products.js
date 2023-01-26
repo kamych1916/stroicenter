@@ -1,7 +1,7 @@
 var fs = require("fs");
 var path = require("path");
 
-async function remove_image({ img_name }) {
+async function removeImage({ img_name }) {
   await fs.unlink(`./static/home/${img_name}`, (err) => {
     console.log(err);
   });
@@ -14,7 +14,13 @@ async function remove_image({ img_name }) {
   //   throw err
   // }
 }
+async function editProduct({product}) {
+  console.log('lol')
+}
 
+async function addProduct(res) {
+  console.log(res)
+}
 // function readWriteSync() {
 //   var data = fs.readFileSync('filelist.txt', 'utf-8');
 
@@ -28,4 +34,4 @@ async function remove_image({ img_name }) {
 // readWriteAsync();
 // readWriteSync();
 
-export { remove_image };
+export { removeImage, editProduct, addProduct  };

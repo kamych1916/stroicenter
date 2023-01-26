@@ -76,7 +76,7 @@
             <button type="button" @click="removeItem(item)">удалить</button>
           </div>
           <div class="productModal-list" v-if="product_data.items.length < 6">
-            <input type="text" required v-model="new_item_list" />
+            <input type="text" v-model="new_item_list" />
             <button type="button" @click="addItem">добавить</button>
           </div>
 
@@ -167,21 +167,29 @@ export default {
         return;
       }
 
-      if(command === 'add'){
-        let length = this.product_data.length + 1
-        this.product_data.id = length
-        await this.$api("products", "add_product", this.product_data);
-        this.addImage(`${length}.png`)
+      if (this.command === "add") {
+        let length = this.product_data.length + 1;
+        this.product_data.id = length;
+        await this.$api("products", "addProduct", this.product_data);
+        this.addImage(`${length}.png`);
       }
 
-      if(command === 'edit'){
-        await this.$api("products", "edit_product", this.product_data);
-        this.addImage(`${this.product_data.id + 1}.png`)
+      if (this.command === "edit") {
+        try {
+          await this.$api("products", "editProduct", {
+            product: this.product_data,
+          });
+          if(this.upload_image){
+            this.addImage(`${this.product_data.id}.png`);
+          }
+        } catch (err) {
+          console.log(err);
+        }
       }
     },
 
     addItem() {
-      if (this.product_data.items.length < 6 & this.new_item_list) {
+      if ((this.product_data.items.length < 6) & this.new_item_list) {
         this.product_data.items.push(this.new_item_list);
         this.new_item_list = null;
       }
@@ -206,7 +214,7 @@ export default {
     },
 
     async removeImage() {
-      await this.$api("products", "remove_image", { img_name: "16.png" });
+      await this.$api("products", "removeImage", { img_name: "16.png" });
     },
 
     onFileSelected(e) {
