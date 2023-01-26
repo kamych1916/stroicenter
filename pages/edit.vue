@@ -1,7 +1,12 @@
 <template>
   <div class="section" style="margin-top: 10px">
     <button
-      @click="kek()"
+      @click="
+        command = 'add';
+        product_modal = true;
+        product_data = product_data_nulled;
+        product_img = null;
+      "
       style="background-color: rgb(59 143 31); color: #fff; cursor: pointer"
     >
       Добавить новый товар
@@ -15,15 +20,23 @@
           <div class="edit-item__btns">
             <button
               style="background-color: #1f6e8f"
+              type="button"
               @click="
+                command = 'edit';
                 product_modal = true;
                 product_data = product;
-                product_img = product.img
+                product_img = product.img;
               "
             >
               изменить
             </button>
-            <button style="background-color: #b21d1d">удалить</button>
+            <button
+              style="background-color: #b21d1d"
+              type="button"
+              @click="command = 'remove'"
+            >
+              удалить
+            </button>
           </div>
         </div>
       </div>
@@ -32,31 +45,39 @@
       class="productModal"
       :value="product_modal"
       v-if="product_modal"
-      @close="product_modal = false"
+      @close="
+        product_modal = false;
+        product_data = product_data_nulled;
+        product_img = null;
+      "
     >
       <div class="productModal-wrapper">
         <div style="margin-bottom: 10px; text-align: center">
           Изменение продукта
         </div>
-        <form class="productModal-form">
+        <form @submit.prevent="productEvent()" class="productModal-form">
           <span>Наименование</span>
-          <input type="text" v-model="product_data.name" />
+          <input type="text" required v-model="product_data.name" />
           <span>Описание</span>
-          <textarea rows="2" v-model="product_data.description"></textarea>
+          <textarea
+            rows="2"
+            required
+            v-model="product_data.description"
+          ></textarea>
           <span>Фасовка</span>
-          <input type="text" v-model="product_data.packing" />
+          <input type="text" required v-model="product_data.packing" />
           <span>Списки</span>
           <div
             class="productModal-list"
             v-for="item in product_data.items"
             :key="item"
           >
-            <input type="text" :value="item" />
-            <button type="button">удалить</button>
+            <input type="text" required :value="item" />
+            <button type="button" @click="removeItem(item)">удалить</button>
           </div>
-          <div class="productModal-list">
-            <input type="text" v-model="new_item_list" />
-            <button type="button">добавить</button>
+          <div class="productModal-list" v-if="product_data.items.length < 6">
+            <input type="text" required v-model="new_item_list" />
+            <button type="button" @click="addItem">добавить</button>
           </div>
 
           <span>К какой группе относиться</span>
@@ -68,10 +89,16 @@
             <small>( 5 ) - Декор / Затирки, </small>
             <small>( 6 ) - Лако-красочные материалы</small>
           </div>
-          <input type="text" v-model="product_data.group" />
+          <input type="text" required v-model="product_data.group" />
 
           <span>Изображение продукта</span>
-          <button @click="$refs.fileInput.click()" type="button" style="cursor: pointer; border: 1px solid #ccc">Загрузить</button>
+          <button
+            @click="$refs.fileInput.click()"
+            type="button"
+            style="cursor: pointer; border: 1px solid #ccc"
+          >
+            Загрузить
+          </button>
           <input
             type="file"
             accept=".png,image/png"
@@ -80,8 +107,10 @@
             style="display: none"
             ref="fileInput"
           />
-          <img id="myimage"  :src="product_img" />
-          <button type="button" @click="edit">edit</button>
+          <img id="myimage" :src="product_img" />
+          <button type="submit">
+            <span>{{ command_name(command) }} продукт</span>
+          </button>
         </form>
       </div>
     </Modal>
@@ -91,7 +120,15 @@
 <script>
 import db from "~/api/database.txt";
 const DB = JSON.parse(db).products;
-
+const product_form = {
+  id: null,
+  name: null,
+  description: null,
+  packing: null,
+  items: [],
+  group: null,
+  img: null,
+};
 export default {
   data() {
     return {
@@ -99,37 +136,87 @@ export default {
 
       product_modal: false,
 
-      product_data: null,
+      product_data: product_form,
+
+      product_data_nulled: product_form,
 
       new_item_list: null,
 
-      product_img: null
+      product_img: null,
+
+      command: null,
     };
   },
+  computed: {
+    command_name() {
+      return (value) => {
+        let command = null;
+        if (value === "add") {
+          command = "Добавить";
+        } else if (value === "edit") {
+          command = "Изменить";
+        }
+        return command;
+      };
+    },
+  },
   methods: {
-    async kek() {
-      let lol = await this.$api("products", "read");
-    },
-    onFileSelected(e) {
-      const reader = new FileReader()
-      reader.readAsDataURL(e.target.files[0])
-      reader.onload = (onloadEvent) => {
-        this.product_img = onloadEvent.target.result
+    async productEvent() {
+      if (!this.product_img) {
+        alert("Пожалуйста, загрузите изображение");
+        return;
       }
-      this.upload_image = e.target.files[0]
+
+      if(command === 'add'){
+        let length = this.product_data.length + 1
+        this.product_data.id = length
+        await this.$api("products", "add_product", this.product_data);
+        this.addImage(`${length}.png`)
+      }
+
+      if(command === 'edit'){
+        await this.$api("products", "edit_product", this.product_data);
+        this.addImage(`${this.product_data.id + 1}.png`)
+      }
     },
-    async edit(){
-      const url = "http://stroicenter.mirllex.com/api/upload";
+
+    addItem() {
+      if (this.product_data.items.length < 6 & this.new_item_list) {
+        this.product_data.items.push(this.new_item_list);
+        this.new_item_list = null;
+      }
+    },
+
+    removeItem(item) {
+      this.product_data.items = this.product_data.items.filter(
+        (str) => str !== item
+      );
+    },
+
+    async addImage(name) {
+      // const url = "http://stroicenter.mirllex.com/api/upload";
+      const url = "http://localhost:3000/api/upload";
       const formData = new FormData();
-      formData.append("file", this.upload_image);
-      const config = {
+      formData.append("file", this.upload_image, name);
+      await this.$axios.$post(url, formData, {
         headers: {
           "content-type": "multipart/form-data",
         },
+      });
+    },
+
+    async removeImage() {
+      await this.$api("products", "remove_image", { img_name: "16.png" });
+    },
+
+    onFileSelected(e) {
+      const reader = new FileReader();
+      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = (onloadEvent) => {
+        this.product_img = onloadEvent.target.result;
       };
-      const response = await this.$axios.$post(url, formData, config);
-      console.log(response)
-    }
+      this.upload_image = e.target.files[0];
+    },
   },
 };
 </script>
