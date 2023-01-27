@@ -61,15 +61,15 @@
         class="home-product"
         v-for="product in products"
         :key="product.id"
-        @click="$router.push('/product/' + product.link)"
+        @click="$router.push('/product/' + product.id)"
       >
         <span>{{ product.name }}</span>
         <p v-html="product.description"></p>
 
         <div class="home-product__hover">
           <ul>
-            <li v-for="item in product.items" :key="item">
-              {{ item }}
+            <li v-for="item in product.items" :key="item.label">
+              {{ item.label }}
             </li>
 
             <div class="home-product__link">Подробнее</div>

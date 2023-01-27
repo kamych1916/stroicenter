@@ -13,7 +13,7 @@
             <p v-html="product.description"></p>
 
             <ul>
-              <li v-for="item in product.items" :key="item" v-html="item"></li>
+              <li v-for="item in product.items" :key="item.label" v-html="item.label"></li>
             </ul>
           </div>
         </div>
@@ -61,8 +61,8 @@
               <ul>
                 <li
                   v-for="item in product.items"
-                  :key="item"
-                  v-html="item"
+                  :key="item.label"
+                  v-html="item.label"
                 ></li>
               </ul>
             </div>
@@ -88,7 +88,8 @@ export default {
   fetchOnServer: false,
   fetch() {
     DB.forEach((product) => {
-      if (product.link == this.$route.params.id) {
+      if (product.id == this.$route.params.id
+      ) {
         this.product = product;
       }
     });

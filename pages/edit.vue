@@ -1,12 +1,7 @@
 <template>
   <div class="section" style="margin-top: 10px">
     <button
-      @click="
-        command = 'add';
-        product_modal = true;
-        product_data = product_data_nulled;
-        product_img = null;
-      "
+      @click="openModal()"
       style="background-color: rgb(59 143 31); color: #fff; cursor: pointer"
     >
       Добавить новый товар
@@ -15,7 +10,7 @@
       <div class="edit-table">
         <div class="edit-item" v-for="product in products" :key="product.id">
           <div class="edit-item__title">
-            {{ product.id }}&nbsp;&nbsp;—&nbsp;&nbsp;{{ product.name }}
+            {{ product.name }}
           </div>
           <div class="edit-item__btns">
             <button
@@ -33,7 +28,7 @@
             <button
               style="background-color: #b21d1d"
               type="button"
-              @click="command = 'remove'"
+              @click="removeProduct(product.id, product.name)"
             >
               удалить
             </button>
@@ -45,11 +40,7 @@
       class="productModal"
       :value="product_modal"
       v-if="product_modal"
-      @close="
-        product_modal = false;
-        product_data = product_data_nulled;
-        product_img = null;
-      "
+      @close="closeModal()"
     >
       <div class="productModal-wrapper">
         <div style="margin-bottom: 10px; text-align: center">
@@ -70,10 +61,17 @@
           <div
             class="productModal-list"
             v-for="item in product_data.items"
-            :key="item"
+            :key="item.label"
           >
-            <input type="text" required :value="item" />
-            <button type="button" @click="removeItem(item)">удалить</button>
+            <input
+              type="text"
+              required
+              :v-model="item.label"
+              :value="item.label"
+            />
+            <button type="button" @click="removeItem(item.label)">
+              удалить
+            </button>
           </div>
           <div class="productModal-list" v-if="product_data.items.length < 6">
             <input type="text" v-model="new_item_list" />
@@ -120,15 +118,6 @@
 <script>
 import db from "~/api/database.txt";
 const DB = JSON.parse(db).products;
-const product_form = {
-  id: null,
-  name: null,
-  description: null,
-  packing: null,
-  items: [],
-  group: null,
-  img: null,
-};
 export default {
   data() {
     return {
@@ -136,9 +125,15 @@ export default {
 
       product_modal: false,
 
-      product_data: product_form,
-
-      product_data_nulled: product_form,
+      product_data: {
+        id: null,
+        name: null,
+        description: null,
+        packing: null,
+        items: [],
+        group: null,
+        img: null,
+      },
 
       new_item_list: null,
 
@@ -166,55 +161,69 @@ export default {
         alert("Пожалуйста, загрузите изображение");
         return;
       }
-
-      if (this.command === "add") {
-        let length = this.product_data.length + 1;
-        this.product_data.id = length;
-        await this.$api("products", "addProduct", this.product_data);
-        this.addImage(`${length}.png`);
+      if (!this.product_data.items.length) {
+        alert("Введите списки для продукта пожалуйста");
+        return;
       }
 
-      if (this.command === "edit") {
-        try {
-          await this.$api("products", "editProduct", {
-            product: this.product_data,
-          });
-          if(this.upload_image){
-            this.addImage(`${this.product_data.id}.png`);
+      let image_name = `/home/${this.product_data.name}.png`;
+      this.product_data.img = image_name;
+
+      this.$api(
+        "products",
+        this.command === "add" ? "addProduct" : "editProduct",
+        this.product_data
+      )
+        .then((res) => {
+          if (this.upload_image) {
+            this.addImage(image_name);
           }
-        } catch (err) {
+          this.products = res;
+          this.product_modal = false;
+        })
+        .catch((err) => {
+          alert("что то не так");
           console.log(err);
+        });
+    },
+
+    async removeProduct(id, name) {
+      if (confirm("Вы уверены что хотите удалить?")) {
+        let response = await this.$api("products", "removeProduct", { id: id, name: name});
+        if (response === "ok") {
+          this.products = this.products.filter((product) => product.id !== id);
         }
       }
     },
 
     addItem() {
-      if ((this.product_data.items.length < 6) & this.new_item_list) {
-        this.product_data.items.push(this.new_item_list);
+      if (this.product_data.items.length < 6 && this.new_item_list) {
+        this.product_data.items.push({
+          label: this.new_item_list,
+        });
         this.new_item_list = null;
       }
     },
 
-    removeItem(item) {
+    removeItem(label) {
       this.product_data.items = this.product_data.items.filter(
-        (str) => str !== item
+        (el) => el.label !== label
       );
     },
-
     async addImage(name) {
       // const url = "http://stroicenter.mirllex.com/api/upload";
       const url = "http://localhost:3000/api/upload";
       const formData = new FormData();
       formData.append("file", this.upload_image, name);
-      await this.$axios.$post(url, formData, {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      });
-    },
-
-    async removeImage() {
-      await this.$api("products", "removeImage", { img_name: "16.png" });
+      try {
+        await this.$axios.$post(url, formData, {
+          headers: {
+            "content-type": "multipart/form-data",
+          },
+        });
+      } catch (err) {
+        console.log(err);
+      }
     },
 
     onFileSelected(e) {
@@ -224,6 +233,35 @@ export default {
         this.product_img = onloadEvent.target.result;
       };
       this.upload_image = e.target.files[0];
+    },
+
+    openModal() {
+      this.command = "add";
+      this.product_img = null;
+      this.product_data = {
+        id: null,
+        name: null,
+        description: null,
+        packing: null,
+        items: [],
+        group: null,
+        img: null,
+      };
+      this.product_modal = true;
+    },
+
+    closeModal() {
+      this.command = null;
+      this.product_img = null;
+      this.product_data = {
+        name: null,
+        description: null,
+        packing: null,
+        items: [],
+        group: null,
+        img: null,
+      };
+      this.product_modal = false;
     },
   },
 };

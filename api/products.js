@@ -1,37 +1,89 @@
-var fs = require("fs");
-var path = require("path");
+let fs = require("fs");
+
+function generateUUID() {
+  var d = new Date().getTime();
+  var d2 =
+    (typeof performance !== "undefined" &&
+      performance.now &&
+      performance.now() * 1000) ||
+    0;
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16;
+    if (d > 0) {
+      r = (d + r) % 16 | 0;
+      d = Math.floor(d / 16);
+    } else {
+      r = (d2 + r) % 16 | 0;
+      d2 = Math.floor(d2 / 16);
+    }
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
 
 async function removeImage({ img_name }) {
   await fs.unlink(`./static/home/${img_name}`, (err) => {
     console.log(err);
   });
-
-  // try {
-  //   const data = await fs.readFileSync(path.join(__dirname, '/') + 'database.txt', 'utf-8');
-  //   return data
-  // } catch (err) {
-  //   console.log(err);
-  //   throw err
-  // }
 }
-async function editProduct({product}) {
-  console.log('lol')
+async function editProduct(res) {
+  try {
+    const data = JSON.parse(
+      await fs.readFileSync("./api/database.txt", "utf-8")
+    );
+    data.products.forEach((product) => {
+      if (product.id == res.id) {
+        fs.rename(
+          `./static/home/${product.name}.png`,
+          `./static/home/${res.name}.png`,
+          (err) => {
+            if (err) console.log("ERROR: " + err);
+          }
+        );
+      }
+    });
+    data.products = data.products.filter(
+      (product) => product.id !== res.id
+    );
+    data.products.push(res);
+
+    fs.writeFileSync("./api/database.txt", JSON.stringify(data), "utf-8");
+
+    return data.products;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function addProduct(res) {
-  console.log(res)
+  try {
+    const data = JSON.parse(
+      await fs.readFileSync("./api/database.txt", "utf-8")
+    );
+    res.id = generateUUID();
+    data.products.push(res);
+    fs.writeFileSync("./api/database.txt", JSON.stringify(data), "utf-8");
+    return data.products;
+  } catch (err) {
+    console.log(err);
+  }
 }
-// function readWriteSync() {
-//   var data = fs.readFileSync('filelist.txt', 'utf-8');
+async function removeProduct({ id, name }) {
+  try {
+    const data = JSON.parse(
+      await fs.readFileSync("./api/database.txt", "utf-8")
+    );
+    data.products = data.products.filter((product) => product.id !== id);
+    
+    fs.writeFileSync("./api/database.txt", JSON.stringify(data), "utf-8");
 
-//   var newValue = data.replace(/^\./gim, 'myString');
+    fs.unlink(`./static/home/${name}.png`, (err) => {
+      console.log(err);
+    });
+    
+    return "ok";
+  } catch (err) {
+    console.log(err);
+  }
+}
 
-//   fs.writeFileSync('filelistSync.txt', newValue, 'utf-8');
-
-//   console.log('readFileSync complete');
-// }
-
-// readWriteAsync();
-// readWriteSync();
-
-export { removeImage, editProduct, addProduct  };
+export { editProduct, addProduct, removeProduct };
