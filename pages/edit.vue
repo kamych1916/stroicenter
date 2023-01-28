@@ -218,8 +218,8 @@ export default {
       );
     },
     async addImage(name) {
-      // const url = "http://stroicenter.mirllex.com/api/upload";
-      const url = "http://localhost:3000/api/upload";
+      const url = "http://stroicenter.mirllex.com/api/upload";
+      // const url = "http://localhost:3000/api/upload";
       const formData = new FormData();
       formData.append("file", this.upload_image, name);
       try {
