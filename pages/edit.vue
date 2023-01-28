@@ -116,12 +116,11 @@
 </template>
 
 <script>
-import db from "~/api/database.txt";
-const DB = JSON.parse(db).products;
+
 export default {
   data() {
     return {
-      products: DB,
+      products: null,
 
       product_modal: false,
 
@@ -154,6 +153,14 @@ export default {
         return command;
       };
     },
+  },
+  async fetch() {
+    let response = await this.$api("products", "getProducts");
+    this.products = response;
+  },
+
+  mounted() {
+    window.scrollTo(0, 0);
   },
   methods: {
     async productEvent() {

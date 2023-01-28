@@ -88,6 +88,10 @@ export default {
     },
   },
 
+  // axios: {
+  //   baseURL: "http://stroicenter.mirllex.com"
+  // },
+
   serverMiddleware: [
     { path: "/api", handler: "~/serverMiddleware/api-image.js" },
     { path: "/api", handler: require("body-parser").json() },

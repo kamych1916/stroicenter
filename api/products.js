@@ -20,11 +20,6 @@ function generateUUID() {
   });
 }
 
-async function removeImage({ img_name }) {
-  await fs.unlink(`./static/home/${img_name}`, (err) => {
-    console.log(err);
-  });
-}
 async function editProduct(res) {
   try {
     const data = JSON.parse(
@@ -41,9 +36,7 @@ async function editProduct(res) {
         );
       }
     });
-    data.products = data.products.filter(
-      (product) => product.id !== res.id
-    );
+    data.products = data.products.filter((product) => product.id !== res.id);
     data.products.push(res);
 
     fs.writeFileSync("./api/database.txt", JSON.stringify(data), "utf-8");
@@ -73,17 +66,45 @@ async function removeProduct({ id, name }) {
       await fs.readFileSync("./api/database.txt", "utf-8")
     );
     data.products = data.products.filter((product) => product.id !== id);
-    
+
     fs.writeFileSync("./api/database.txt", JSON.stringify(data), "utf-8");
 
     fs.unlink(`./static/home/${name}.png`, (err) => {
       console.log(err);
     });
-    
+
     return "ok";
   } catch (err) {
     console.log(err);
   }
 }
 
-export { editProduct, addProduct, removeProduct };
+async function getProduct({ id }) {
+  try {
+    const data = JSON.parse(
+      await fs.readFileSync("./api/database.txt", "utf-8")
+    );
+    let answer = null;
+    data.products.forEach((product) => {
+      if (product.id === id) {
+        answer = product
+      }
+    });
+    return answer;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function getProducts() {
+  try {
+    const data = JSON.parse(
+      await fs.readFileSync("./api/database.txt", "utf-8")
+    );
+    return data.products;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export { editProduct, addProduct, removeProduct, getProducts, getProduct };

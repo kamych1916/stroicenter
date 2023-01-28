@@ -13,7 +13,11 @@
             <p v-html="product.description"></p>
 
             <ul>
-              <li v-for="item in product.items" :key="item.label" v-html="item.label"></li>
+              <li
+                v-for="item in product.items"
+                :key="item.label"
+                v-html="item.label"
+              ></li>
             </ul>
           </div>
         </div>
@@ -75,9 +79,6 @@
 </template>
 
 <script>
-import db from '~/api/database.txt';
-const DB = JSON.parse(db).products;
-
 export default {
   data() {
     return {
@@ -85,14 +86,15 @@ export default {
     };
   },
 
-  fetchOnServer: false,
-  fetch() {
-    DB.forEach((product) => {
-      if (product.id == this.$route.params.id
-      ) {
-        this.product = product;
-      }
+  // fetchOnServer: false,
+  async fetch() {
+    let response = await this.$api("products", "getProduct", {
+      id: this.$route.params.id,
     });
+    console.log(response)
+    this.product = response;
+  },
+  mounted() {
     window.scrollTo(0, 0);
   },
 };

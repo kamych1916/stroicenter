@@ -87,20 +87,24 @@
 </template>
 
 <script>
-import db from '~/api/database.txt';
-const DB = JSON.parse(db).products;
+// import db from "~/api/database.txt";
+// const DB = JSON.parse(db).products;
 
 export default {
   data() {
     return {
-      products: DB,
-      products_store: DB,
+      products: null,
+      products_store: null,
       active_group: [],
     };
   },
+  async fetch() {
+    let response = await this.$api("products", "getProducts");
+    this.products_store = response;
+    this.products = response;
+  },
 
-  fetchOnServer: false,
-  fetch() {
+  mounted() {
     window.scrollTo(0, 0);
   },
 
@@ -108,7 +112,7 @@ export default {
     change_list(group_number) {
       window.scrollTo({
         top: this.$refs.list.offsetTop - 40,
-        behavior: "smooth", 
+        behavior: "smooth",
       });
 
       if (this.active_group.includes(group_number)) {
@@ -116,7 +120,7 @@ export default {
       } else {
         this.active_group.push(group_number);
       }
-      
+
       if (this.active_group.length > 0) {
         let new_list = [];
         this.active_group.forEach((ag) => {
