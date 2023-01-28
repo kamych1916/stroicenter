@@ -25,37 +25,35 @@
     </div>
     <div class="product-menu">
       <div class="section product-menu__wrapper">
-        <div class="product-menu__item">Применение</div>
-        <div class="product-menu__item product-menu__item--active">
+        <div
+          class="product-menu__item"
+          :class="[item_value === 1 ? 'product-menu__item--active' : null]"
+          @click="changeItems(1)"
+        >
+          Применение
+        </div>
+        <div
+          class="product-menu__item"
+          :class="[item_value === 2 ? 'product-menu__item--active' : null]"
+          @click="changeItems(2)"
+        >
           Характеристики
         </div>
-        <div class="product-menu__item">Инструкция</div>
+        <div
+          class="product-menu__item"
+          :class="[item_value === 3 ? 'product-menu__item--active' : null]"
+          @click="changeItems(3)"
+        >
+          Инструкция
+        </div>
       </div>
       <!-- {{ product.packing }} -->
     </div>
     <div class="section">
       <div class="product-characteristics">
         <div class="product-info">
-          <h2>Характеристики</h2>
-          <div class="product-info__card">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
-            nostrum laboriosam velit commodi esse? Repudiandae ex ullam quaerat
-            ducimus cum accusamus exercitationem iste laudantium, est quis illum
-            expedita in, alias tempore maxime beatae vel, vitae adipisci? Totam
-            incidunt reprehenderit vero laboriosam quasi error quam, temporibus
-            recusandae ullam tenetur eveniet aut ipsum eligendi aspernatur sit
-            facilis perspiciatis in rem iste quae quisquam? Doloremque molestiae
-            totam, non itaque autem, assumenda quas maxime aperiam quia aliquam
-            in porro quidem, consectetur necessitatibus? Sed voluptatum odio
-            fuga tenetur modi voluptas quis placeat rem? Quae quisquam commodi
-            praesentium beatae delectus recusandae ex ut, sunt aliquid, deserunt
-            aut dolorem laudantium necessitatibus assumenda modi, rerum nobis
-            officiis rem. Aspernatur dolorum soluta laudantium maiores nulla
-            distinctio! Expedita labore ullam amet earum velit, suscipit maiores
-            harum cum et, possimus temporibus nam ex laudantium in cumque
-            corrupti voluptatem molestiae aliquam, eligendi blanditiis. Incidunt
-            exercitationem esse saepe quaerat labore omnis eligendi dolorem.
-          </div>
+          <h2>{{ itemName(item_value) }}</h2>
+          <div class="product-info__card" v-html="itemText(product)"></div>
         </div>
         <div class="product-files">
           <div class="product-files__sticky">
@@ -83,19 +81,50 @@ export default {
   data() {
     return {
       product: null,
+      item_value: 1,
     };
   },
-
-  // fetchOnServer: false,
+  computed: {
+    itemName() {
+      return (value) => {
+        let name = null;
+        if (value === 1) {
+          name = "Применение";
+        } else if (value === 2) {
+          name = "Характеристики";
+        } else {
+          name = "Инструкции";
+        }
+        return name;
+      };
+    },
+    itemText() {
+      return (value) => {
+        let text = null;
+        if (this.item_value === 1) {
+          text = value.use;
+        } else if (this.item_value === 2) {
+          text = value.characteristics;
+        } else {
+          text = value.instructions;
+        }
+        return text;
+      };
+    },
+  },
   async fetch() {
     let response = await this.$api("products", "getProduct", {
       id: this.$route.params.id,
     });
-    console.log(response)
     this.product = response;
   },
   mounted() {
     window.scrollTo(0, 0);
+  },
+  methods: {
+    changeItems(item) {
+      this.item_value = item;
+    },
   },
 };
 </script>

@@ -1,7 +1,7 @@
 export default {
   server: {
-    host: "0",
-    // host: "localhost",
+    // host: "0",
+    host: "localhost",
   },
   ssr: true,
 
@@ -64,7 +64,7 @@ export default {
     "~/plugins/api-context.js"
   ],
 
-  modules: ["@nuxtjs/axios"],
+  modules: ["@nuxtjs/axios", "vue2-editor/nuxt"],
 
   buildModules: ["@nuxtjs/style-resources"],
 
@@ -89,9 +89,9 @@ export default {
     },
   },
 
-  axios: {
-    baseURL: "http://stroicenter.mirllex.com"
-  },
+  // axios: {
+  //   baseURL: "http://stroicenter.mirllex.com"
+  // },
 
   serverMiddleware: [
     { path: "/api", handler: "~/serverMiddleware/api-image.js" },

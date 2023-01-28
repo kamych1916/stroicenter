@@ -89,6 +89,21 @@
           </div>
           <input type="text" required v-model="product_data.group" />
 
+          <span>Характеристики</span>
+          <client-only>
+            <VueEditor v-model="product_data.characteristics" />
+          </client-only>
+
+          <span>Применение</span>
+          <client-only>
+            <VueEditor v-model="product_data.use" />
+          </client-only>
+
+          <span>Инструкции</span>
+          <client-only>
+            <VueEditor v-model="product_data.instructions" />
+          </client-only>
+
           <span>Изображение продукта</span>
           <button
             @click="$refs.fileInput.click()"
@@ -105,7 +120,12 @@
             style="display: none"
             ref="fileInput"
           />
-          <img id="myimage" :src="product_img" />
+          <img
+            id="myimage"
+            style="width: 300px !important"
+            :src="product_img"
+          />
+
           <button type="submit">
             <span>{{ command_name(command) }} продукт</span>
           </button>
@@ -116,7 +136,6 @@
 </template>
 
 <script>
-
 export default {
   data() {
     return {
@@ -132,6 +151,9 @@ export default {
         items: [],
         group: null,
         img: null,
+        characteristics: null,
+        use: null,
+        instructions: null,
       },
 
       new_item_list: null,
@@ -196,7 +218,10 @@ export default {
 
     async removeProduct(id, name) {
       if (confirm("Вы уверены что хотите удалить?")) {
-        let response = await this.$api("products", "removeProduct", { id: id, name: name});
+        let response = await this.$api("products", "removeProduct", {
+          id: id,
+          name: name,
+        });
         if (response === "ok") {
           this.products = this.products.filter((product) => product.id !== id);
         }
@@ -218,8 +243,8 @@ export default {
       );
     },
     async addImage(name) {
-      const url = "http://stroicenter.mirllex.com/api/upload";
-      // const url = "http://localhost:3000/api/upload";
+      // const url = "http://stroicenter.mirllex.com/api/upload";
+      const url = "http://localhost:3000/api/upload";
       const formData = new FormData();
       formData.append("file", this.upload_image, name);
       try {

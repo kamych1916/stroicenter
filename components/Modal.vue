@@ -60,7 +60,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 .modal {
   position: fixed;
   top: 0;
@@ -115,15 +115,15 @@ export default {
 
   &-content {
     overflow: auto;
-    width: 450px;
+    width: 650px;
     height: 100%;
     position: relative;
-    max-width: 450px;
+    max-width: 650px;
     max-height: 650px;
     border-radius: 20px;
-    @include less-than(laptop_l) {
-      max-width: 400px;
-    }
+    // @include less-than(laptop_l) {
+    //   max-width: 400px;
+    // }
     @include less-than(tablet) {
       max-width: 350px;
     }
