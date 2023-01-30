@@ -1,144 +1,160 @@
 <template>
-  <div class="section" style="margin-top: 10px">
-    <button
-      @click="openModal()"
-      style="background-color: rgb(59 143 31); color: #fff; cursor: pointer"
-    >
-      Добавить новый товар
-    </button>
-    <div class="edit">
-      <div class="edit-table">
-        <div class="edit-item" v-for="product in products" :key="product.id">
-          <div class="edit-item__title">
-            {{ product.name }}
-          </div>
-          <div class="edit-item__btns">
-            <button
-              style="background-color: #1f6e8f"
-              type="button"
-              @click="
-                command = 'edit';
-                product_modal = true;
-                product_data = product;
-                product_img = product.img;
-              "
-            >
-              изменить
-            </button>
-            <button
-              style="background-color: #b21d1d"
-              type="button"
-              @click="removeProduct(product.id, product.name)"
-            >
-              удалить
-            </button>
+  <div>
+    <div v-if="access" class="section" style="margin-top: 10px">
+      <button
+        @click="openModal()"
+        style="background-color: rgb(59 143 31); color: #fff; cursor: pointer"
+      >
+        Добавить новый товар
+      </button>
+      <div class="edit">
+        <div class="edit-table">
+          <div class="edit-item" v-for="product in products" :key="product.id">
+            <div class="edit-item__title">
+              {{ product.name }}
+            </div>
+            <div class="edit-item__btns">
+              <button
+                style="background-color: #1f6e8f"
+                type="button"
+                @click="
+                  command = 'edit';
+                  product_modal = true;
+                  product_data = product;
+                  product_img = product.img;
+                "
+              >
+                изменить
+              </button>
+              <button
+                style="background-color: #b21d1d"
+                type="button"
+                @click="removeProduct(product.id, product.name)"
+              >
+                удалить
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <Modal
-      class="productModal"
-      :value="product_modal"
-      v-if="product_modal"
-      @close="closeModal()"
-    >
-      <div class="productModal-wrapper">
-        <div style="margin-bottom: 10px; text-align: center">
-          Изменение продукта
-        </div>
-        <form @submit.prevent="productEvent()" class="productModal-form">
-          <span>Наименование</span>
-          <input type="text" required v-model="product_data.name" />
-          <span>Описание</span>
-          <textarea
-            rows="2"
-            required
-            v-model="product_data.description"
-          ></textarea>
-          <span>Фасовка</span>
-          <input type="text" required v-model="product_data.packing" />
-          <span>Списки</span>
-          <div
-            class="productModal-list"
-            v-for="item in product_data.items"
-            :key="item.label"
-          >
-            <input
-              type="text"
+      <Modal
+        class="productModal"
+        :value="product_modal"
+        v-if="product_modal"
+        @close="closeModal()"
+      >
+        <div class="productModal-wrapper">
+          <div style="margin-bottom: 10px; text-align: center">
+            Изменение продукта
+          </div>
+          <form @submit.prevent="productEvent()" class="productModal-form">
+            <span>Наименование</span>
+            <input type="text" required v-model="product_data.name" />
+            <span>Описание</span>
+            <textarea
+              rows="2"
               required
-              :v-model="item.label"
-              :value="item.label"
-            />
-            <button type="button" @click="removeItem(item.label)">
-              удалить
+              v-model="product_data.description"
+            ></textarea>
+            <span>Фасовка</span>
+            <input type="text" required v-model="product_data.packing" />
+            <span>Списки</span>
+            <div
+              class="productModal-list"
+              v-for="item in product_data.items"
+              :key="item.label"
+            >
+              <input
+                type="text"
+                required
+                :v-model="item.label"
+                :value="item.label"
+              />
+              <button type="button" @click="removeItem(item.label)">
+                удалить
+              </button>
+            </div>
+            <div class="productModal-list" v-if="product_data.items.length < 6">
+              <input type="text" v-model="new_item_list" />
+              <button type="button" @click="addItem">добавить</button>
+            </div>
+
+            <span>К какой группе относиться</span>
+            <div>
+              <small>( 1 ) - Клеи для плитки, </small>
+              <small>( 2 ) - Штукатурки, </small> <br />
+              <small>( 3 ) - Шпаклевки, </small>
+              <small>( 4 ) - Полы, </small> <br />
+              <small>( 5 ) - Декор / Затирки, </small>
+              <small>( 6 ) - Лако-красочные материалы</small>
+            </div>
+            <input type="text" required v-model="product_data.group" />
+
+            <span>Характеристики</span>
+            <client-only>
+              <VueEditor v-model="product_data.characteristics" />
+            </client-only>
+
+            <span>Применение</span>
+            <client-only>
+              <VueEditor v-model="product_data.use" />
+            </client-only>
+
+            <span>Инструкции</span>
+            <client-only>
+              <VueEditor v-model="product_data.instructions" />
+            </client-only>
+
+            <span>Изображение продукта</span>
+            <button
+              @click="$refs.fileInput.click()"
+              type="button"
+              style="cursor: pointer; border: 1px solid #ccc"
+            >
+              Загрузить
             </button>
-          </div>
-          <div class="productModal-list" v-if="product_data.items.length < 6">
-            <input type="text" v-model="new_item_list" />
-            <button type="button" @click="addItem">добавить</button>
-          </div>
+            <input
+              type="file"
+              accept=".png,image/png"
+              aria-label="upload image button"
+              @change="onFileSelected"
+              style="display: none"
+              ref="fileInput"
+            />
+            <img
+              id="myimage"
+              style="width: 300px !important"
+              :src="product_img"
+            />
 
-          <span>К какой группе относиться</span>
-          <div>
-            <small>( 1 ) - Клеи для плитки, </small>
-            <small>( 2 ) - Штукатурки, </small> <br />
-            <small>( 3 ) - Шпаклевки, </small>
-            <small>( 4 ) - Полы, </small> <br />
-            <small>( 5 ) - Декор / Затирки, </small>
-            <small>( 6 ) - Лако-красочные материалы</small>
-          </div>
-          <input type="text" required v-model="product_data.group" />
-
-          <span>Характеристики</span>
-          <client-only>
-            <VueEditor v-model="product_data.characteristics" />
-          </client-only>
-
-          <span>Применение</span>
-          <client-only>
-            <VueEditor v-model="product_data.use" />
-          </client-only>
-
-          <span>Инструкции</span>
-          <client-only>
-            <VueEditor v-model="product_data.instructions" />
-          </client-only>
-
-          <span>Изображение продукта</span>
-          <button
-            @click="$refs.fileInput.click()"
-            type="button"
-            style="cursor: pointer; border: 1px solid #ccc"
-          >
-            Загрузить
-          </button>
-          <input
-            type="file"
-            accept=".png,image/png"
-            aria-label="upload image button"
-            @change="onFileSelected"
-            style="display: none"
-            ref="fileInput"
-          />
-          <img
-            id="myimage"
-            style="width: 300px !important"
-            :src="product_img"
-          />
-
-          <button type="submit">
-            <span>{{ command_name(command) }} продукт</span>
-          </button>
-        </form>
-      </div>
-    </Modal>
+            <button type="submit">
+              <span>{{ command_name(command) }} продукт</span>
+            </button>
+          </form>
+        </div>
+      </Modal>
+    </div>
+    <div v-else class="section" style="margin: 200px 0">
+      <input
+        type="password"
+        v-model="password"
+        style="border: 1px solid #ccc"
+        v-on:keyup.enter="signIn()"
+      />
+      <button @click="signIn()">войти</button>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  layout: "withoutFooter",
+
   data() {
     return {
+      password: null,
+      access: false,
+
       products: null,
 
       product_modal: false,
@@ -163,6 +179,7 @@ export default {
       command: null,
     };
   },
+
   computed: {
     command_name() {
       return (value) => {
@@ -176,6 +193,7 @@ export default {
       };
     },
   },
+
   async fetch() {
     let response = await this.$api("products", "getProducts");
     this.products = response;
@@ -184,6 +202,7 @@ export default {
   mounted() {
     window.scrollTo(0, 0);
   },
+
   methods: {
     async productEvent() {
       if (!this.product_img) {
@@ -242,9 +261,10 @@ export default {
         (el) => el.label !== label
       );
     },
+
     async addImage(name) {
-      // const url = "http://stroicenter.mirllex.com/api/upload";
-      const url = "http://localhost:3000/api/upload";
+      const url = "http://stroicenter.mirllex.com/api/upload";
+      // const url = "http://localhost:3000/api/upload";
       const formData = new FormData();
       formData.append("file", this.upload_image, name);
       try {
@@ -294,6 +314,12 @@ export default {
         img: null,
       };
       this.product_modal = false;
+    },
+
+    signIn() {
+      if (this.password === "19692002") {
+        this.access = true;
+      }
     },
   },
 };

@@ -87,9 +87,6 @@
 </template>
 
 <script>
-// import db from "~/api/database.txt";
-// const DB = JSON.parse(db).products;
-
 export default {
   data() {
     return {
