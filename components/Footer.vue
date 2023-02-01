@@ -6,7 +6,7 @@
         <p>Производство и продажа сухих строительных смесей</p>
       </div>
       <div class="footer-info">
-        <span>Появились вопросы? Звоните! </span>
+        <span>Появились вопросы - звоните! </span>
         <a href="tel:+992918622774"> <i class="bx bx-phone"></i> 918-62-27-74</a>
         <span><i class='bx bx-time'></i> Ежедневно с 8:00 до 20:00</span>
       </div>
@@ -24,7 +24,7 @@ export default {};
     width: 100%;
     height: 100%;
     padding: 30px 0;
-    background-color: #1f6e8f;
+    background-color: #0C63E4;
     color: #fff;
     @include less-than(laptop) {
       margin-bottom: 50px;

@@ -96,15 +96,15 @@ async function getProduct({ id }) {
   }
 }
 
-async function getProducts() {
+async function getData() {
   try {
     const data = JSON.parse(
       await fs.readFileSync("./api/database.txt", "utf-8")
     );
-    return data.products;
+    return data;
   } catch (err) {
     console.log(err);
   }
 }
 
-export { editProduct, addProduct, removeProduct, getProducts, getProduct };
+export { editProduct, addProduct, removeProduct, getData, getProduct };

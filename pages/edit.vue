@@ -7,6 +7,7 @@
       >
         Добавить новый товар
       </button>
+
       <div class="edit">
         <div class="edit-table">
           <div class="edit-item" v-for="product in products" :key="product.id">
@@ -37,6 +38,7 @@
           </div>
         </div>
       </div>
+
       <Modal
         class="productModal"
         :value="product_modal"
@@ -47,17 +49,21 @@
           <div style="margin-bottom: 10px; text-align: center">
             Изменение продукта
           </div>
+
           <form @submit.prevent="productEvent()" class="productModal-form">
             <span>Наименование</span>
             <input type="text" required v-model="product_data.name" />
+
             <span>Описание</span>
             <textarea
               rows="2"
               required
               v-model="product_data.description"
             ></textarea>
+
             <span>Фасовка</span>
             <input type="text" required v-model="product_data.packing" />
+
             <span>Списки</span>
             <div
               class="productModal-list"
@@ -80,15 +86,14 @@
             </div>
 
             <span>К какой группе относиться</span>
-            <div>
-              <small>( 1 ) - Клеи для плитки, </small>
-              <small>( 2 ) - Штукатурки, </small> <br />
-              <small>( 3 ) - Шпаклевки, </small>
-              <small>( 4 ) - Полы, </small> <br />
-              <small>( 5 ) - Декор / Затирки, </small>
-              <small>( 6 ) - Лако-красочные материалы</small>
-            </div>
-            <input type="text" required v-model="product_data.group" />
+            <select v-model="product_data.group.value">
+              <option value="1">Клеи для плитки</option>
+              <option value="2">Штукатурки</option>
+              <option value="3">Шпаклевки</option>
+              <option value="4">Полы</option>
+              <option value="5">Декор / Затирки</option>
+              <option value="6">Лако-красочные материалы</option>
+            </select>
 
             <span>Характеристики</span>
             <client-only>
@@ -134,6 +139,7 @@
         </div>
       </Modal>
     </div>
+
     <div v-else class="section" style="margin: 200px 0">
       <input
         type="password"
@@ -216,6 +222,7 @@ export default {
 
       let image_name = `/home/${this.product_data.name}.png`;
       this.product_data.img = image_name;
+      this.wichGroup(this.product_data.group.value)
 
       this.$api(
         "products",
@@ -321,6 +328,45 @@ export default {
         this.access = true;
       }
     },
+    wichGroup(val){
+      let groupVal = Number(val) 
+      if(groupVal === 1){
+        this.product_data.group = {
+          value: 1,
+          label: "Клеи для плитки"
+        }
+      }
+      if(groupVal === 2){
+        this.product_data.group = {
+          value: 2,
+          label: "Штукатурки"
+        }
+      }
+      if(groupVal === 3){
+        this.product_data.group = {
+          value: 3,
+          label: "Шпаклевки"
+        }
+      }
+      if(groupVal === 4){
+        this.product_data.group = {
+          value: 4,
+          label: "Полы"
+        }
+      }
+      if(groupVal === 5){
+        this.product_data.group = {
+          value: 5,
+          label: "Декор / Затирки"
+        }
+      }
+      if(groupVal === 6){
+        this.product_data.group = {
+          value: 6,
+          label: "Лако-красочные материалы"
+        }
+      }
+    }
   },
 };
 </script>

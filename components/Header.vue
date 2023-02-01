@@ -2,10 +2,9 @@
   <header class="header section">
     <div class="header-wrapper">
       <nuxt-link to="/" class="header-logo">Строй Центр</nuxt-link>
-      <div class="header-menu">
-        <i class="bx bx-globe"></i>
-        <i class="bx bx-phone"></i>
-      </div>
+      <a href="tel:+992918622774" class="header-menu">
+        <img src="/phone.svg" alt=""> 918-62-27-74
+      </a>
     </div>
   </header>
 </template>
@@ -18,7 +17,7 @@ export default {};
 .header {
   position: sticky;
   top: 0;
-  background: #f8f8f8;
+  background: #fff;
   z-index: 101;
   @include less-than(tablet) {
     display: none;
@@ -27,7 +26,7 @@ export default {};
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 20px 0;
   }
 
   &-logo {
@@ -43,18 +42,15 @@ export default {};
   }
   &-menu {
     display: flex;
-    font-size: 28px;
-    color: #044e6e;
-    i {
-      transition: all ease 0.3s;
-      cursor: pointer;
-      &:hover {
-        text-shadow: 0px 4px 10px rgb(194, 194, 194);
-        transform: scale(1.03);
-      }
-      &:nth-last-child(1){
-        margin-left: 20px;
-      }
+    color: #2B3347;
+    justify-content: center;
+    align-items: center;
+    font-family: "Gilroy-Medium";
+    font-size: 15px;
+    text-decoration: none;
+    img{
+      width: 30px;
+      margin-right: 10px;
     }
   }
   &-globe {
