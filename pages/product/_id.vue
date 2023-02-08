@@ -4,7 +4,7 @@
       <div class="product-breadcrumbs">
         <nuxt-link to="/">Главная</nuxt-link>
         <i class="bx bx-chevron-right"></i>
-        <nuxt-link :to="`/?group=${product.group.value}`">{{
+        <nuxt-link :to="`/list/?group=${product.group.value}`">{{
           product.group.label
         }}</nuxt-link>
         <i class="bx bx-chevron-right"></i>

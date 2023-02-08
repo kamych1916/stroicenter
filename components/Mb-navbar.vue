@@ -5,12 +5,12 @@
         <i class="bx bx-home"></i>
       </nuxt-link>
       <slot></slot>
-      <div class="m-navbar__link">
+      <!-- <div class="m-navbar__link">
         <i class="bx bx-globe"></i>
-      </div>
-      <nuxt-link to="/login" class="m-navbar__link">
+      </div> -->
+      <a href="tel:+992918622774" class="m-navbar__link">
         <i class="bx bx-phone"></i>
-      </nuxt-link>
+      </a>
     </div>
   </div>
 </template>
@@ -56,13 +56,14 @@ export default {};
     }
 
     a.nuxt-link-exact-active {
-      color: #044e6e;
+      color: #0c63e4;
     }
   }
 
   &__link {
     padding: 0 25px;
-    color: #d8d8d8;
+    // color: #d8d8d8;
+    color: #0c62e4de;
   }
 }
 </style>
