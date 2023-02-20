@@ -66,6 +66,7 @@
 
             <span>Списки</span>
             <div
+              v-if="product_data.items.length > 0"
               class="productModal-list"
               v-for="item in product_data.items"
               :key="item.label"
@@ -87,6 +88,7 @@
 
             <span>К какой группе относиться</span>
             <select v-model="product_data.group.value">
+              <option value="0">Нет группы</option>
               <option value="1">Клеи для плитки</option>
               <option value="2">Штукатурки</option>
               <option value="3">Шпаклевки</option>
@@ -222,7 +224,7 @@ export default {
 
       let image_name = `/home/${this.product_data.name}.png`;
       this.product_data.img = image_name;
-      this.wichGroup(this.product_data.group.value)
+      this.wichGroup(this.product_data.group.value);
 
       this.$api(
         "products",
@@ -303,9 +305,13 @@ export default {
         description: null,
         packing: null,
         items: [],
-        group: null,
+        group: {
+          value: '0',
+          label: ''
+        },
         img: null,
       };
+      console.log(this.product_data);
       this.product_modal = true;
     },
 
@@ -328,45 +334,45 @@ export default {
         this.access = true;
       }
     },
-    wichGroup(val){
-      let groupVal = Number(val) 
-      if(groupVal === 1){
+    wichGroup(val) {
+      let groupVal = Number(val);
+      if (groupVal === 1) {
         this.product_data.group = {
           value: 1,
-          label: "Клеи для плитки"
-        }
+          label: "Клеи для плитки",
+        };
       }
-      if(groupVal === 2){
+      if (groupVal === 2) {
         this.product_data.group = {
           value: 2,
-          label: "Штукатурки"
-        }
+          label: "Штукатурки",
+        };
       }
-      if(groupVal === 3){
+      if (groupVal === 3) {
         this.product_data.group = {
           value: 3,
-          label: "Шпаклевки"
-        }
+          label: "Шпаклевки",
+        };
       }
-      if(groupVal === 4){
+      if (groupVal === 4) {
         this.product_data.group = {
           value: 4,
-          label: "Полы"
-        }
+          label: "Полы",
+        };
       }
-      if(groupVal === 5){
+      if (groupVal === 5) {
         this.product_data.group = {
           value: 5,
-          label: "Декор / Затирки"
-        }
+          label: "Декор / Затирки",
+        };
       }
-      if(groupVal === 6){
+      if (groupVal === 6) {
         this.product_data.group = {
           value: 6,
-          label: "Лако-красочные материалы"
-        }
+          label: "Лако-красочные материалы",
+        };
       }
-    }
+    },
   },
 };
 </script>
