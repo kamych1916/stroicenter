@@ -32,12 +32,16 @@
             <div class="list-welcome__description">
               <h1>{{ slider.name }}</h1>
               <p v-html="slider.description"></p>
-              <nuxt-link :to="`/list/?group=${slider.group}`"> Подробнее</nuxt-link>
+              <nuxt-link :to="`/list/?group=${slider.group}`">
+                Подробнее</nuxt-link
+              >
             </div>
           </div>
         </div>
       </Transition>
-      <nuxt-link :to="`/list/?group=${slider.group}`" class="list-mobile_btn">Подробнее</nuxt-link>
+      <nuxt-link :to="`/list/?group=${slider.group}`" class="list-mobile_btn"
+        >Подробнее</nuxt-link
+      >
       <div class="list-slider">
         <div class="list-arrow--prev" @click="sliderEvent('prev')">
           <i class="bx bx-left-arrow-alt"></i>
@@ -68,14 +72,17 @@ export default {
       slider_number: 0,
       slider: null,
       slider_flag: true,
+
+      slider_interval: null,
     };
   },
   mounted() {
     this.$api("products", "getData").then((res) => {
       this.slider_list = res.banners;
       this.slider = this.slider_list[0];
-      setInterval(() => {
-        this.sliderEvent("next")
+
+      this.slider_interval = setInterval(() => {
+        this.sliderEvent("next");
       }, 5000);
     });
   },
@@ -100,6 +107,10 @@ export default {
         this.slider_number = Number(val) - 1;
         this.slider = this.slider_list[this.slider_number];
       }
+      clearInterval(this.slider_interval);
+      this.slider_interval = setInterval(() => {
+        this.sliderEvent("next");
+      }, 5000);
       setTimeout(() => {
         this.slider_flag = !this.slider_flag;
       }, 300);
@@ -322,7 +333,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-      padding: 20px 0;
+    padding: 20px 0;
     @include less-than(tablet) {
       width: 100%;
     }

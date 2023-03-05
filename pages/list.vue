@@ -1,17 +1,23 @@
 <template>
   <div class="home">
-    <div class="home-background" v-if="slider_list">
+    <div class="home-background" v-if="slider">
       <div class="home-welcome section">
-        <div class="home-welcome__description">
-          <h1>{{ slider.name }}</h1>
-          <p v-html="slider.description"></p>
+        <Transition name="slide_img" style="z-index: 1; width: 100%">
+          <div v-if="slider_flag" class="home-welcome__description">
+            <h1>{{ slider.name }}</h1>
+            <p v-html="slider.description"></p>
+          </div>
+        </Transition>
+      </div>
+      <Transition name="slide_container">
+        <div v-if="slider_flag" class="home-welcome__title">
+          <img :src="slider.title.img" />
+          <span>{{ slider.title.text }}</span>
         </div>
-      </div>
-      <div class="home-welcome__title">
-        <img :src="slider.title.img" />
-        <span>{{ slider.title.text }}</span>
-      </div>
-      <img :src="slider.background_list" class="home-background__img" />
+      </Transition>
+      <Transition name="slide_img" style="z-index: 1; width: 100%">
+        <img v-if="slider_flag" :src="slider.background_list" class="home-background__img" />
+      </Transition>
 
       <div class="home-slider">
         <div class="home-arrow--prev" @click="sliderEvent('prev')">
@@ -123,6 +129,7 @@ export default {
       slider_number: 0,
       slider: null,
       slider_flag: true,
+      slider_interval: null,
     };
   },
 
@@ -130,20 +137,18 @@ export default {
     this.$api("products", "getData").then((res) => {
       this.slider_list = res.banners;
       this.slider = this.slider_list[0];
-      setInterval(() => {
-        this.sliderEvent("next")
+      this.slider_interval = setInterval(() => {
+        this.sliderEvent("next");
       }, 5000);
 
       this.products_store = res.products;
       this.products = res.products;
 
-      if (this.$route.query.group) {
+      if (!this.$route.query.group) {
         setTimeout(() => {
           this.change_list(Number(this.$route.query.group));
           this.sliderEvent(this.$route.query.group);
         }, 10);
-      } else {
-        window.scrollTo(0, 0);
       }
     });
   },
@@ -197,6 +202,10 @@ export default {
         this.slider_number = Number(val) - 1;
         this.slider = this.slider_list[this.slider_number];
       }
+      clearInterval(this.slider_interval);
+      this.slider_interval = setInterval(() => {
+        this.sliderEvent("next");
+      }, 5000);
       setTimeout(() => {
         this.slider_flag = !this.slider_flag;
       }, 300);
@@ -213,6 +222,7 @@ export default {
     position: relative;
     display: flex;
     align-items: center;
+    overflow: hidden;
     @include less-than(laptop) {
       flex-direction: column-reverse;
     }
@@ -285,8 +295,7 @@ export default {
     }
   }
   &-welcome__description {
-    //   width: 55%;
-    min-height: 280px;
+    min-height: 300px;
     color: #fff;
     display: flex;
     flex-flow: column nowrap;
@@ -550,5 +559,26 @@ export default {
 ::-webkit-scrollbar-thumb {
   background: #597dfd24;
   border-radius: 10px;
+}
+
+.slide_img-enter-active,
+.slide_img-leave-active {
+  transition: opacity 0.5s;
+}
+.slide_img-enter,
+.slide_img-leave-to {
+  opacity: 0;
+}
+
+.slide_container-enter-active {
+  transition: all 0.3s ease;
+}
+.slide_container-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide_container-enter,
+.slide_container-leave-to {
+  transform: translateX(10px);
+  opacity: 0;
 }
 </style>

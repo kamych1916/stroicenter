@@ -314,8 +314,12 @@ export default {
   }
   &-info__card {
     width: 100%;
-    height: 800px;
+    min-height: 800px;
     margin-top: 40px;
+    ::v-deep ul {
+      padding-left: 30px !important;
+      line-height: 1.5 !important;
+    }
   }
 
   &-files {
